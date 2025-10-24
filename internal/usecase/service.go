@@ -12,6 +12,7 @@ type ItemUsecase interface {
 	GetAllItems(ctx context.Context) ([]*entity.Item, error)
 	GetItemByID(ctx context.Context, id int64) (*entity.Item, error)
 	CreateItem(ctx context.Context, input CreateItemInput) (*entity.Item, error)
+	UpdateItem(ctx context.Context, id int64, input UpdateItemInput) (*entity.Item, error)
 	DeleteItem(ctx context.Context, id int64) error
 	GetCategorySummary(ctx context.Context) (*CategorySummary, error)
 }
@@ -89,6 +90,10 @@ func (u *itemUsecase) CreateItem(ctx context.Context, input CreateItemInput) (*e
 	}
 
 	return createdItem, nil
+}
+
+func (u *itemUsecase) UpdateItem(ctx context.Context, id int64, input UpdateItemInput) (*entity.Item, error) {
+	return nil, fmt.Errorf("update item not implemented")
 }
 
 func (u *itemUsecase) DeleteItem(ctx context.Context, id int64) error {
