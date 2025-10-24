@@ -93,7 +93,50 @@ func (u *itemUsecase) CreateItem(ctx context.Context, input CreateItemInput) (*e
 }
 
 func (u *itemUsecase) UpdateItem(ctx context.Context, id int64, input UpdateItemInput) (*entity.Item, error) {
-	return nil, fmt.Errorf("update item not implemented")
+	if id <= 0 {
+		return nil, domainErrors.ErrInvalidInput
+	}
+
+	if input.Name == nil && input.Brand == nil && input.PurchasePrice == nil {
+		return nil, fmt.Errorf("%w: %s", domainErrors.ErrInvalidInput, "at least one field must be provided")
+	}
+
+	item, err := u.itemRepo.FindByID(ctx, id)
+	if err != nil {
+		if domainErrors.IsNotFoundError(err) {
+			return nil, domainErrors.ErrItemNotFound
+		}
+		return nil, fmt.Errorf("failed to retrieve item: %w", err)
+	}
+
+	name := item.Name
+	if input.Name != nil {
+		name = *input.Name
+	}
+
+	brand := item.Brand
+	if input.Brand != nil {
+		brand = *input.Brand
+	}
+
+	purchasePrice := item.PurchasePrice
+	if input.PurchasePrice != nil {
+		purchasePrice = *input.PurchasePrice
+	}
+
+	if err := item.Update(name, item.Category, brand, purchasePrice, item.PurchaseDate); err != nil {
+		return nil, fmt.Errorf("%w: %s", domainErrors.ErrInvalidInput, err.Error())
+	}
+
+	updatedItem, err := u.itemRepo.Update(ctx, item)
+	if err != nil {
+		if domainErrors.IsNotFoundError(err) {
+			return nil, domainErrors.ErrItemNotFound
+		}
+		return nil, fmt.Errorf("failed to update item: %w", err)
+	}
+
+	return updatedItem, nil
 }
 
 func (u *itemUsecase) DeleteItem(ctx context.Context, id int64) error {
