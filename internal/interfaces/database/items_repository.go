@@ -191,6 +191,10 @@ func scanItem(scanner interface {
 	if purchaseDate != "" {
 		if parsedDate, err := time.Parse("2006-01-02", purchaseDate); err == nil {
 			item.PurchaseDate = parsedDate.Format("2006-01-02")
+		} else if parsedDate, err := time.Parse(time.RFC3339, purchaseDate); err == nil {
+			item.PurchaseDate = parsedDate.Format("2006-01-02")
+		} else if len(purchaseDate) >= 10 {
+			item.PurchaseDate = purchaseDate[:10]
 		} else {
 			item.PurchaseDate = purchaseDate
 		}
