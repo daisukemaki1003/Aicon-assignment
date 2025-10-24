@@ -484,19 +484,19 @@ func TestItemUsecase_UpdateItem(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		tt := tt
-		t.Run(ttt.name, func(t *testing.T) {
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
 			mockRepo := new(MockItemRepository)
-			if ttt.setupMock != nil {
-				ttt.setupMock(mockRepo)
+			if tc.setupMock != nil {
+				tc.setupMock(mockRepo)
 			}
 
 			usecase := NewItemUsecase(mockRepo)
 			ctx := context.Background()
-			updatedItem, err := usecase.UpdateItem(ctx, ttt.id, ttt.input)
+			updatedItem, err := usecase.UpdateItem(ctx, tc.id, tc.input)
 
-			ttt.check(t, updatedItem, err)
+			tc.check(t, updatedItem, err)
 			mockRepo.AssertExpectations(t)
 		})
 	}
